@@ -1,0 +1,57 @@
+<app-toolbar toolbarTitle="Add Employee"></app-toolbar>
+<div class="p-4">
+    <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+        <mat-form-field class="w-full">
+            <span matPrefix><mat-icon color="primary">person_outline</mat-icon></span>
+            <input matInput id="name" type="text" formControlName="name" placeholder="Employee name" required>
+        </mat-form-field>
+        <mat-form-field class="w-full">
+            <span matPrefix><mat-icon color="primary">work_outline</mat-icon></span>
+            <mat-select formControlName="role" placeholder="Select role">
+                <mat-option *ngFor="let role of ['toppingList']" [value]="role">{{role}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div class="flex flex-row justify-between items-center gap-2">
+            <mat-form-field class="w-full">
+                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="picker1" placeholder="Today">
+                <mat-datepicker-toggle matPrefix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1 [calendarHeaderComponent]="dateTemplate">
+                    <div>
+                        ASDF
+                    </div>
+                </mat-datepicker>
+            </mat-form-field>
+
+            <div><mat-icon>arrow_right_alt</mat-icon></div>
+
+            <mat-form-field class="w-full">
+                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="picker2" placeholder="No date">
+                <mat-datepicker-toggle matPrefix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2 [calendarHeaderComponent]="dateTemplate">
+                </mat-datepicker>
+            </mat-form-field>
+        </div>
+
+
+        <p>Complete the form to enable button.</p>
+        <div class="absolute bottom-2 right-2">
+            <button type="submit" [disabled]="!employeeForm.valid">Submit</button>
+        </div>
+    </form>
+
+    <hr>
+
+    <p>Form Value: {{ employeeForm.value | json }}</p>
+
+    <p>Form Status: {{ employeeForm.status }}</p>
+</div>
+
+<!-- <button type="button" (click)="updateProfile()">Update Profile</button> -->
+
+
+<!-- 
+  Copyright Google LLC. All Rights Reserved.
+  Use of this source code is governed by an MIT-style license that
+  can be found in the LICENSE file at https://angular.io/license
+  -->

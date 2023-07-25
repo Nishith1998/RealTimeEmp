@@ -1,0 +1,28 @@
+<div class="m-2 grid grid-cols-2">
+<div class="m-2" *ngFor="let label of ['Today', 'Next Monday', 'Next Tuesday', 'After 1 week']">
+    <button mat-button> {{label}} </button>
+</div>
+</div>
+
+<div class="flex flex-row items-center justify-center">
+    <button mat-icon-button (click)="previousClicked('month')">
+        <mat-icon>keyboard_arrow_left</mat-icon>
+    </button>
+    <span class="example-header-label">{{periodLabel}}</span>
+    <button mat-icon-button (click)="nextClicked('month')">
+        <mat-icon>keyboard_arrow_right</mat-icon>
+    </button>
+</div>
+
+
+<mat-date-range-picker-actions>
+    <div class="flex flex-row w-full justify-between items-center">
+        <div>{{selectedDate}}</div>
+        <div>
+            <button mat-button matDateRangePickerCancel>Cancel</button>
+            <button mat-raised-button color="primary" matDateRangePickerApply>
+                Save
+            </button>
+        </div>
+    </div>
+</mat-date-range-picker-actions>
