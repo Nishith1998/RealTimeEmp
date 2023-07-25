@@ -1,7 +1,11 @@
 <div class="m-2 grid grid-cols-2">
-<div class="m-2" *ngFor="let label of ['Today', 'Next Monday', 'Next Tuesday', 'After 1 week']">
-    <button mat-button> {{label}} </button>
-</div>
+    <div class="m-2" *ngFor="let customLabel of [
+{label: 'Today', value: 1}, 
+{label: 'Next Monday', value: 2}, 
+{label: 'Next Tuesday', value:3 }, 
+{label: 'After 1 week', value:7 }]">
+        <button mat-button (click)="customLabelClicked(customLabel.value)"> {{customLabel.label}} </button>
+    </div>
 </div>
 
 <div class="flex flex-row items-center justify-center">

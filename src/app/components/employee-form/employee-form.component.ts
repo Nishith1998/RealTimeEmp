@@ -31,5 +31,6 @@ export class EmployeeFormComponent implements OnInit {
 
   onSubmit() {
     console.log("form value: ", this.employeeForm);
+    // save the record
   }
 }

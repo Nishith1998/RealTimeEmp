@@ -14,19 +14,16 @@
 
         <div class="flex flex-row justify-between items-center gap-2">
             <mat-form-field class="w-full">
-                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="picker1" placeholder="Today">
+                <input matInput formControlName="fromDate" [matDatepicker]="picker1" placeholder="Today">
                 <mat-datepicker-toggle matPrefix [for]="picker1"></mat-datepicker-toggle>
                 <mat-datepicker #picker1 [calendarHeaderComponent]="dateTemplate">
-                    <div>
-                        ASDF
-                    </div>
                 </mat-datepicker>
             </mat-form-field>
 
             <div><mat-icon>arrow_right_alt</mat-icon></div>
 
             <mat-form-field class="w-full">
-                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="picker2" placeholder="No date">
+                <input matInput formControlName="toDate" [matDatepicker]="picker2" placeholder="No date">
                 <mat-datepicker-toggle matPrefix [for]="picker2"></mat-datepicker-toggle>
                 <mat-datepicker #picker2 [calendarHeaderComponent]="dateTemplate">
                 </mat-datepicker>
@@ -36,7 +33,7 @@
 
         <p>Complete the form to enable button.</p>
         <div class="absolute bottom-2 right-2">
-            <button type="submit" [disabled]="!employeeForm.valid">Submit</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!employeeForm.valid">Submit</button>
         </div>
     </form>
 

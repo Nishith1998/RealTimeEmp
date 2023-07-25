@@ -16,9 +16,11 @@ export class DateTemplateComponent<D> {
     private _dateAdapter: DateAdapter<D>,
     @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
     cdr: ChangeDetectorRef) {
-    _calendar.stateChanges
-      .pipe(takeUntil(this._destroyed))
-      .subscribe(() => cdr.markForCheck());
+    // _calendar.stateChanges
+    //   .pipe(takeUntil(this._destroyed))
+    //   .subscribe(() => cdr.markForCheck());
+
+    _calendar._userSelection.subscribe(date => console.log("Date change", date))
   }
 
   ngOnDestroy() {
@@ -51,5 +53,9 @@ export class DateTemplateComponent<D> {
     this._calendar.activeDate = mode === 'month' ?
       this._dateAdapter.addCalendarMonths(this._calendar.activeDate, 1) :
       this._dateAdapter.addCalendarYears(this._calendar.activeDate, 1);
+  }
+
+  customLabelClicked(noOfDays: number) {
+    this._calendar.activeDate = this._dateAdapter.addCalendarDays(this._calendar.activeDate, noOfDays);
   }
 }
