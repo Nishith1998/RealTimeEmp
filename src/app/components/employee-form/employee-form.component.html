@@ -16,7 +16,7 @@
             <mat-form-field class="w-full">
                 <input matInput formControlName="fromDate" [matDatepicker]="picker1" placeholder="Today">
                 <mat-datepicker-toggle matPrefix [for]="picker1"></mat-datepicker-toggle>
-                <mat-datepicker #picker1 [calendarHeaderComponent]="dateTemplate">
+                <mat-datepicker [dateClass]="dateClass" #picker1 [calendarHeaderComponent]="dateTemplate">
                 </mat-datepicker>
             </mat-form-field>
 

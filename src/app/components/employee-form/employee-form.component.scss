@@ -7,3 +7,8 @@
 //         // @apply top-9
 //     } 
 // }
+
+::ng-deep button.example-custom-date-class {
+    background: orange;
+    border-radius: 100%;
+  }

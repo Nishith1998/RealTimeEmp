@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApiService } from 'src/app/services/api.service';
+import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
 @Component({
   selector: 'app-employee-list',
@@ -8,9 +10,22 @@ import { Router } from '@angular/router';
 })
 export class EmployeeListComponent {
 
-  constructor(private router: Router) {}
+  empList: any = signal([]);
+  constructor(private router: Router, private apiService: ApiService, private idxDbSer: IndexedDbService) {}
+
+  ngOnInit() {
+    this.idxDbSer.get().subscribe(empData => {
+      console.log('indGet: ', empData)
+      this.empList.set(empData);
+    });
+    // this.apiService.getAll().subscribe(empData => {
+    //   this.empList.set(empData);
+    // });
+
+  }
 
   addEmployee() {
     this.router.navigate(['employeeForm']);
   }
+
 }

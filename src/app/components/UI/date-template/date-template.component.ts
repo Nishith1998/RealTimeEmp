@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { DateAdapter, MAT_DATE_FORMATS, MatDateFormats } from '@angular/material/core';
 import { MatCalendar } from '@angular/material/datepicker';
 import { Subject, takeUntil } from 'rxjs';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-date-template',
@@ -12,6 +13,7 @@ export class DateTemplateComponent<D> {
   private _destroyed = new Subject<void>();
 
   constructor(
+    private _empService: EmployeeService,
     private _calendar: MatCalendar<D>,
     private _dateAdapter: DateAdapter<D>,
     @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
@@ -57,5 +59,10 @@ export class DateTemplateComponent<D> {
 
   customLabelClicked(noOfDays: number) {
     this._calendar.activeDate = this._dateAdapter.addCalendarDays(this._calendar.activeDate, noOfDays);
+  }
+
+  myFun(value: any) {
+    console.log("value: ", value);
+    this._empService.customDate.next(String(this._calendar.activeDate));
   }
 }

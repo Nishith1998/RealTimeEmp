@@ -8,7 +8,7 @@ import { EmployeeListComponent } from './components/employee-list/employee-list.
 import { ToolbarComponent } from './components/UI/toolbar/toolbar.component';
 import { MaterialModule } from 'src/app/modules/material/material.module';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DateTemplateComponent } from './components/UI/date-template/date-template.component';
 
 @NgModule({
@@ -24,7 +24,8 @@ import { DateTemplateComponent } from './components/UI/date-template/date-templa
     AppRoutingModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
-    MaterialModule
+    MaterialModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

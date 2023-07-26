@@ -24,7 +24,7 @@
         <div>{{selectedDate}}</div>
         <div>
             <button mat-button matDateRangePickerCancel>Cancel</button>
-            <button mat-raised-button color="primary" matDateRangePickerApply>
+            <button mat-raised-button color="primary" matDateRangePickerApply (click)="myFun($event)">
                 Save
             </button>
         </div>
