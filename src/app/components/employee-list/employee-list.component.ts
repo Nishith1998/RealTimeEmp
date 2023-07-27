@@ -2,6 +2,7 @@ import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from 'src/app/services/api.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
+import { CdkDragEnd } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-employee-list',
@@ -9,9 +10,10 @@ import { IndexedDbService } from 'src/app/services/indexed-db.service';
   styleUrls: ['./employee-list.component.scss']
 })
 export class EmployeeListComponent {
+  
 
   empList: any = signal([]);
-  constructor(private router: Router, private apiService: ApiService, private idxDbSer: IndexedDbService) {}
+  constructor(private router: Router, private idxDbSer: IndexedDbService) {}
 
   ngOnInit() {
     this.idxDbSer.get().subscribe(empData => {
@@ -26,6 +28,15 @@ export class EmployeeListComponent {
 
   addEmployee() {
     this.router.navigate(['employeeForm']);
+  }
+
+  onDragEnded(event: any, item: any): void {
+    if (event.distance.x > 100) {
+      // Check if the drag distance along the x-axis is greater than 100px
+      // this.deleteItem(item);
+      console.log("item to delete: ", item);
+      this.idxDbSer.delete(item.key).subscribe(data => console.log("deleted"), err => console.log("errors"));
+    }
   }
 
 }

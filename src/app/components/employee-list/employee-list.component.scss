@@ -1,0 +1,25 @@
+.swipe-container {
+    position: relative;
+    overflow: hidden;
+    height: 50px;
+    background-color: #f0f0f0;
+    margin-bottom: 10px;
+    cursor: grab;
+  }
+  
+  .item-content {
+    padding: 10px;
+  }
+  
+  @keyframes swipeOutRight {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  
+  .swipe-animating {
+    animation: swipeOutRight 0.3s;
+  }

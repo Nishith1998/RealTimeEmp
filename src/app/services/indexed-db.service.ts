@@ -3,13 +3,14 @@ import { Observable, Observer, ReplaySubject, Subject } from 'rxjs';
 import { take, filter } from 'rxjs/operators';
 
 const VERSION = 1;
-const STORAGENAME = 'employeeStore';
+const STORAGE_NAME = 'employeeStore';
 
 interface Record {
-  key: string;
-  value: any;
-  ttl: number;
-  timestamp: number;
+  key: number;
+  name: string;
+  role: string;
+  fromDate: Date;
+  toDate: Date;
 }
 type RecordInput = Omit<Record, 'timestamp'>;
 @Injectable({
@@ -30,13 +31,13 @@ export class IndexedDbService {
     if (!window.indexedDB) {
       onError('IndexedDB not available');
     } else {
-      const openRequest = indexedDB.open(STORAGENAME, VERSION);
+      const openRequest = indexedDB.open(STORAGE_NAME, VERSION);
       openRequest.onerror = () => onError(openRequest.error);
       openRequest.onsuccess = () => this.db.next(openRequest.result);
       openRequest.onupgradeneeded = () => {
         try {
           const db: IDBDatabase = openRequest.result;
-          const surveyCacheStore = db.createObjectStore(STORAGENAME, {
+          const surveyCacheStore = db.createObjectStore(STORAGE_NAME, {
             keyPath: 'key',
           });
           // surveyCacheStore.createIndex('value', 'value');
@@ -57,18 +58,18 @@ export class IndexedDbService {
       };
       this.$db.subscribe((db: any) => {
         try {
-          const txn = db.transaction([STORAGENAME], 'readonly');
-          const store = txn.objectStore(STORAGENAME);
+          const txn = db.transaction([STORAGE_NAME], 'readonly');
+          const store = txn.objectStore(STORAGE_NAME);
           const getRequest: IDBRequest<Record> = store.getAll();
           getRequest.onerror = () => onError(getRequest.error);
           getRequest.onsuccess = () => {
             const record = getRequest.result;
             if (
-              !record
+              !record && JSON.stringify(record) === '[]'
             ) {
-              observer.next(500);
-            } else {
               observer.error(500);
+            } else {
+              observer.next(getRequest.result);
 
               // observer.next(getRequest.result);
             }
@@ -89,13 +90,37 @@ export class IndexedDbService {
       };
       this.$db.subscribe((db: any) => {
         try {
-          const txn = db.transaction([STORAGENAME], 'readwrite');
-          const store = txn.objectStore(STORAGENAME);
-          const record: Record = { ...value, timestamp: Date.now() };
+          const txn = db.transaction([STORAGE_NAME], 'readwrite');
+          const store = txn.objectStore(STORAGE_NAME);
+          const record: Record = { ...value, key: Date.now() };
           const putRequest = store.put(record);
           putRequest.onerror = () => onError(putRequest.error);
           putRequest.onsuccess = () => {
             observer.next(putRequest.result);
+            observer.complete();
+          };
+        } catch (err) {
+          onError(err);
+        }
+      });
+    });
+  }
+
+  delete(keyName: number): Observable<IDBValidKey | null> {
+    return Observable.create((observer: Observer<IDBValidKey>) => {
+      const onError = (error: any) => {
+        console.log(error);
+        observer.complete();
+      };
+      this.$db.subscribe((db: any) => {
+        try {
+          const txn = db.transaction([STORAGE_NAME], 'readwrite');
+          const store = txn.objectStore(STORAGE_NAME);
+          // const record: Record = { ...value, key: Date.now() };
+          const deleteRequest = store.delete(keyName);
+          deleteRequest.onerror = () => onError(deleteRequest.error);
+          deleteRequest.onsuccess = () => {
+            observer.next(deleteRequest.result);
             observer.complete();
           };
         } catch (err) {

@@ -10,21 +10,9 @@ export class AppComponent {
   title = 'real-time-emp';
   inputValue!: string;
 
-  constructor(private apiService: ApiService) {}
+  constructor() {}
 
-  add() {
-    this.apiService.add({name: this.inputValue}).subscribe(res => {
-      if(res) {
-        console.log("inserted!!", res)
-      }
-    })
+  deletedItem(value: string) {
+    console.log("deletedItem: ",value);
   }
-  get() {
-    this.apiService.getAll().subscribe(res => {
-      if(res) {
-        console.log("get!!", res)
-      }
-    })
-  }
-  del() {}
 }

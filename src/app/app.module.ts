@@ -10,6 +10,7 @@ import { MaterialModule } from 'src/app/modules/material/material.module';
 import { EmployeeFormComponent } from './components/employee-form/employee-form.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DateTemplateComponent } from './components/UI/date-template/date-template.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { DateTemplateComponent } from './components/UI/date-template/date-templa
     BrowserAnimationsModule,
     ReactiveFormsModule,
     MaterialModule,
-    FormsModule
+    FormsModule,
+    DragDropModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { DateTemplateComponent } from 'src/app/components/UI/date-template/date-template.component';
 import { ApiService } from 'src/app/services/api.service';
 import { EmployeeService } from 'src/app/services/employee.service';
+import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class EmployeeFormComponent implements OnInit {
   dateTemplate = DateTemplateComponent;
   fromDateFrom!: number;
 
-  constructor(private fb: FormBuilder, private empService: EmployeeService, private apiService: ApiService, private router: Router) {}
+  constructor(private fb: FormBuilder, private empService: EmployeeService, private apiService: ApiService, private router: Router, private idxDbSer: IndexedDbService) {}
 
   ngOnInit() {
     this.employeeForm = this.fb.group({
@@ -52,7 +53,7 @@ export class EmployeeFormComponent implements OnInit {
 
   onSubmit() {
     console.log("form value: ", this.employeeForm);
-    this.apiService.add(this.employeeForm.value).subscribe({
+    this.idxDbSer.put(this.employeeForm.value).subscribe({
       next: val => { console.log("Employee added successfully"); this.router.navigate([''])},
       error: error => console.log("Error adding employee: ", error)
     });
