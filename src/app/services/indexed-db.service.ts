@@ -6,11 +6,11 @@ const VERSION = 1;
 const STORAGE_NAME = 'employeeStore';
 
 interface Record {
-  key: number;
+  key?: number;
   name: string;
   role: string;
-  fromDate: Date;
-  toDate: Date;
+  fromDate: string;
+  toDate: string;
 }
 type RecordInput = Omit<Record, 'timestamp'>;
 @Injectable({
@@ -65,7 +65,7 @@ export class IndexedDbService {
           getRequest.onsuccess = () => {
             const record = getRequest.result;
             if (
-              !record && JSON.stringify(record) === '[]'
+              !record
             ) {
               observer.error(500);
             } else {
@@ -82,7 +82,39 @@ export class IndexedDbService {
     });
   }
 
-  put(value: RecordInput): Observable<IDBValidKey | null> {
+  getByKey(keyName: number): Observable<Record> {
+    return Observable.create((observer: Observer<Record | 500>) => {
+      const onError = (error: any) => {
+        console.log(error);
+        observer.complete();
+      };
+      this.$db.subscribe((db: any) => {
+        try {
+          const txn = db.transaction([STORAGE_NAME], 'readonly');
+          const store = txn.objectStore(STORAGE_NAME);
+          const getRequest: IDBRequest<Record> = store.get(keyName);
+          getRequest.onerror = () => onError(getRequest.error);
+          getRequest.onsuccess = () => {
+            const record = getRequest.result;
+            if (
+              !record
+            ) {
+              observer.error(500);
+            } else {
+              observer.next(getRequest.result);
+
+              // observer.next(getRequest.result);
+            }
+            observer.complete();
+          };
+        } catch (err) {
+          onError(err);
+        }
+      });
+    });
+  }
+
+  put(key:number,value: RecordInput): Observable<IDBValidKey | null> {
     return Observable.create((observer: Observer<IDBValidKey>) => {
       const onError = (error: any) => {
         console.log(error);
@@ -92,7 +124,7 @@ export class IndexedDbService {
         try {
           const txn = db.transaction([STORAGE_NAME], 'readwrite');
           const store = txn.objectStore(STORAGE_NAME);
-          const record: Record = { ...value, key: Date.now() };
+          const record: Record = { ...value, key:key };
           const putRequest = store.put(record);
           putRequest.onerror = () => onError(putRequest.error);
           putRequest.onsuccess = () => {

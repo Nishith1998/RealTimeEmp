@@ -30,12 +30,20 @@ export class EmployeeListComponent {
     this.router.navigate(['employeeForm']);
   }
 
+  editEmployee(emp: any) {
+    this.router.navigate(['employeeForm/'+ emp.key])
+  }
+
   onDragEnded(event: any, item: any): void {
     if (event.distance.x > 100) {
       // Check if the drag distance along the x-axis is greater than 100px
       // this.deleteItem(item);
       console.log("item to delete: ", item);
       this.idxDbSer.delete(item.key).subscribe(data => console.log("deleted"), err => console.log("errors"));
+      this.idxDbSer.get().subscribe(empData => {
+        console.log('indGet2: ', empData)
+        this.empList.set(empData);
+      });
     }
   }
 
