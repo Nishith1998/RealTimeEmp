@@ -1,3 +1,8 @@
 <mat-toolbar color="primary">
-      <div>{{toolbarTitle}}</div>
+    <div class="flex flex-row space-between items-center w-full">
+      <div class="flex w-full">{{toolbarTitle}}</div>
+      <div *ngIf="iconEnabled" class="flex">
+        <button mat-icon-button (click)="onActionBtnClicked()"><mat-icon color="white">{{iconName}}</mat-icon></button>
+        </div>
+    </div>
   </mat-toolbar>

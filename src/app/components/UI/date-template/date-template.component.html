@@ -1,5 +1,5 @@
 <div class="m-2 grid grid-cols-2">
-    <div class="m-2" *ngFor="let customLabel of labelList">
+    <div class="m-2 flex justify-center items-center" *ngFor="let customLabel of labelList">
         <!-- {{_calendar.activeDate}}
         {{selectedDate}}
         {{customLabel.value()}} -->
@@ -20,8 +20,8 @@
 
 <mat-date-range-picker-actions>
     <div class="flex flex-row w-full justify-between items-center">
-        <div class="flex flex-row items-center">
-            <mat-icon class="text-md">event</mat-icon>
+        <div class="flex flex-row items-center text-md">
+            <mat-icon class="text-md mx-2" color="primary">event</mat-icon>
             {{selectedDate}}
         </div>
         <div>

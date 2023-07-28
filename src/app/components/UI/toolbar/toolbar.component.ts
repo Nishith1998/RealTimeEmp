@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-toolbar',
@@ -7,4 +7,12 @@ import { Component, Input } from '@angular/core';
 })
 export class ToolbarComponent {
   @Input() toolbarTitle!: string;
+  @Input() iconEnabled: boolean = false;
+  @Input() iconName!: string;
+  @Output() onAction: EventEmitter<null> = new EventEmitter();
+
+  onActionBtnClicked() {
+    this.onAction.emit();
+  }
+
 }

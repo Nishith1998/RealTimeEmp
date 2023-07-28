@@ -1,6 +1,6 @@
 <div class="flex flex-col h-full">
     <app-toolbar toolbarTitle="Employee List"></app-toolbar>
-    <div class="flex flex-col h-full justify-between p-4">
+    <div class="flex flex-col h-full justify-between">
         <div class="relative flex flex-col">
             <div *ngIf="empList().length === 0">No records found</div>
             <app-employee-details *ngIf="(empList() | sortByFromDate: 'current') as currentEmployeeList"
@@ -13,10 +13,10 @@
                 (onDragEnd)="onDragEnded($event)">
             </app-employee-details>
         </div>
-        <div class="flex self-end">
-            <button mat-fab color="primary" (click)="addEmployee()">
-                <mat-icon>add</mat-icon>
-            </button>
-        </div>
+    </div>
+    <div class="fixed bottom-4 right-2 z-20 flex self-end">
+        <button mat-fab color="primary" (click)="addEmployee()">
+            <mat-icon>add</mat-icon>
+        </button>
     </div>
 </div>

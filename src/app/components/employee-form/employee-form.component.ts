@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DateTemplateComponent } from 'src/app/components/UI/date-template/date-template.component';
-import { FROM_DATE_HEADER, ROLE_LIST, TO_DATE_HEADER } from 'src/app/constants';
+import { ROLE_LIST } from 'src/app/constants';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
@@ -17,7 +17,6 @@ export class EmployeeFormComponent implements OnInit {
   employeeForm!: FormGroup;
 
   dateTemplate = DateTemplateComponent;
-  // fromDateFrom!: number;
   isEditEnabled: boolean = false;
   employeeId!: string | null;
   roleList: string[] = ROLE_LIST;
@@ -37,15 +36,10 @@ export class EmployeeFormComponent implements OnInit {
     }
     this.empService.customDate.subscribe(dateValue => {
 
-      // this.fromDateFrom = new Date(dateValue).getDate();
       this.empService.datePicker() === 'fromDate' ?
-      this.employeeForm.controls['fromDate'].patchValue(new Date(dateValue)) :
-      this.employeeForm.controls['toDate'].patchValue(new Date(dateValue))
+        this.employeeForm.controls['fromDate'].patchValue(new Date(dateValue)) :
+        this.employeeForm.controls['toDate'].patchValue(new Date(dateValue))
     });
-    // this.empService.toDate.subscribe(dateValue => {
-    //   this.fromDateFrom = new Date(dateValue).getDate();
-    //   this.employeeForm.controls['toDate'].patchValue(new Date(dateValue))
-    // })
   }
   initializeForm(empData: { name: string, role: string, fromDate: string, toDate: string }) {
     this.employeeForm = this.fb.group({
@@ -57,14 +51,14 @@ export class EmployeeFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if(this.isEditEnabled && this.employeeId !== null){
+    if (this.isEditEnabled && this.employeeId !== null) {
       console.log("form value: ", this.employeeForm);
       this.idxDbSer.put(+this.employeeId, this.employeeForm.value).subscribe({
         next: val => { console.log("Employee added successfully"); this.router.navigate(['']) },
         error: error => console.log("Error adding employee: ", error)
       });
     }
-    else{
+    else {
       console.log("form value: ", this.employeeForm);
       this.idxDbSer.put(Date.now(), this.employeeForm.value).subscribe({
         next: val => { console.log("Employee added successfully"); this.router.navigate(['']) },
@@ -73,16 +67,24 @@ export class EmployeeFormComponent implements OnInit {
     }
   }
 
+  onCancle() {
+    this.router.navigate(['/']);
+  }
+
   datePickerOpened(type: 'fromDate' | 'toDate') {
-    // this.empService.datePicker.next(type);
-    // type === 'fromDate' ?
     this.empService.datePicker.set(type) //:
-    // this.empService.datePicker.set(TO_DATE_HEADER)
     console.log("opened")
   }
 
   getDateFromDate(value: any) {
-    // console.log("value: ", value)
     return new Date(value);
+  }
+
+  deleteEmp() {
+    if (this.employeeId)
+      this.idxDbSer.delete(+this.employeeId).subscribe(data => {
+        console.log("deleted");
+        this.router.navigate(['/']);
+      }, err => console.log("errors"));
   }
 }
