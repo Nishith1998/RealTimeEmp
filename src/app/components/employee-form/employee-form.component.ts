@@ -1,8 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, first, takeUntil } from 'rxjs';
 import { DateTemplateComponent } from 'src/app/components/UI/date-template/date-template.component';
-import { ROLE_LIST } from 'src/app/constants';
+import { ROLE_LIST, SNACK_BAR_DURATION, SNACK_BAR_MSGS } from 'src/app/constants';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
@@ -13,28 +15,29 @@ import { IndexedDbService } from 'src/app/services/indexed-db.service';
   styleUrls: ['./employee-form.component.scss']
 })
 export class EmployeeFormComponent implements OnInit {
-  @Input() formValue: { name: string, role: string, fromDate: string, toDate: string } = { name: '', role: '', fromDate: '', toDate: '' };
+  formValue: { name: string, role: string, fromDate: string, toDate: string } = { name: '', role: '', fromDate: '', toDate: '' };
   employeeForm!: FormGroup;
 
   dateTemplate = DateTemplateComponent;
   isEditEnabled: boolean = false;
   employeeId!: string | null;
   roleList: string[] = ROLE_LIST;
+  private _destroyed = new Subject<void>();
 
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private empService: EmployeeService, private router: Router, private idxDbSer: IndexedDbService) { }
+
+  constructor(private _snackBar: MatSnackBar, private route: ActivatedRoute, private fb: FormBuilder, private empService: EmployeeService, private router: Router, private indexedDBService: IndexedDbService) { }
 
   ngOnInit() {
-    console.log("pathParam: ", this.route.snapshot.paramMap.get('id'));
     this.employeeId = this.route.snapshot.paramMap.get('id');
     if (this.employeeId !== null) {
       this.isEditEnabled = true;
-      this.idxDbSer.getByKey(+this.employeeId).subscribe(empData => {
+      this.indexedDBService.getByKey(+this.employeeId).pipe(first()).subscribe(empData => {
         this.initializeForm(empData)
       });
     } else {
       this.initializeForm({ name: '', role: '', fromDate: '', toDate: '' });
     }
-    this.empService.customDate.subscribe(dateValue => {
+    this.empService.customDate.pipe(takeUntil(this._destroyed)).subscribe(dateValue => {
 
       this.empService.datePicker() === 'fromDate' ?
         this.employeeForm.controls['fromDate'].patchValue(new Date(dateValue)) :
@@ -52,28 +55,35 @@ export class EmployeeFormComponent implements OnInit {
 
   onSubmit() {
     if (this.isEditEnabled && this.employeeId !== null) {
-      console.log("form value: ", this.employeeForm);
-      this.idxDbSer.put(+this.employeeId, this.employeeForm.value).subscribe({
-        next: val => { console.log("Employee added successfully"); this.router.navigate(['']) },
-        error: error => console.log("Error adding employee: ", error)
+      this.indexedDBService.put(+this.employeeId, this.employeeForm.value).pipe(first()).subscribe({
+        next: val => {
+          this._snackBar.open(SNACK_BAR_MSGS.onEditSuccess, "", { duration: SNACK_BAR_DURATION });
+          this.router.navigate(['']);
+        },
+        error: error => {
+          this._snackBar.open(SNACK_BAR_MSGS.onEditFail, "", { duration: SNACK_BAR_DURATION });
+        }
       });
     }
     else {
-      console.log("form value: ", this.employeeForm);
-      this.idxDbSer.put(Date.now(), this.employeeForm.value).subscribe({
-        next: val => { console.log("Employee added successfully"); this.router.navigate(['']) },
-        error: error => console.log("Error adding employee: ", error)
+      this.indexedDBService.put(Date.now(), this.employeeForm.value).pipe(first()).subscribe({
+        next: val => {
+          this.router.navigate(['']);
+          this._snackBar.open(SNACK_BAR_MSGS.onAddSuccess, "", { duration: SNACK_BAR_DURATION });
+        },
+        error: error => {
+          this._snackBar.open(SNACK_BAR_MSGS.onAddFail, "", { duration: SNACK_BAR_DURATION });
+        }
       });
     }
   }
 
-  onCancle() {
-    this.router.navigate(['/']);
+  onCancel() {
+    this.router.navigate(['']);
   }
 
   datePickerOpened(type: 'fromDate' | 'toDate') {
-    this.empService.datePicker.set(type) //:
-    console.log("opened")
+    this.empService.datePicker.set(type);
   }
 
   getDateFromDate(value: any) {
@@ -81,10 +91,19 @@ export class EmployeeFormComponent implements OnInit {
   }
 
   deleteEmp() {
-    if (this.employeeId)
-      this.idxDbSer.delete(+this.employeeId).subscribe(data => {
-        console.log("deleted");
+    if (this.employeeId) {
+      this.indexedDBService.delete(+this.employeeId).pipe(first()).subscribe(data => {
+        this._snackBar.open(SNACK_BAR_MSGS.onDeleteSuccess, "", { duration: SNACK_BAR_DURATION });
         this.router.navigate(['/']);
-      }, err => console.log("errors"));
+      },
+        err => {
+          this._snackBar.open(SNACK_BAR_MSGS.onDeleteFail, "", { duration: SNACK_BAR_DURATION });
+        });
+    }
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 }

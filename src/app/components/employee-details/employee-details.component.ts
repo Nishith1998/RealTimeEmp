@@ -12,7 +12,7 @@ export class EmployeeDetailsComponent implements OnInit {
   @Input() employeeTitle!: string;
   @Input() employeeList!: EmployeeDetails[];
 
-  @Output() onDragEnd = new EventEmitter<{event: CdkDragEnd, emp: EmployeeDetails}>();
+  @Output() onDragEnd = new EventEmitter<{ event: CdkDragEnd, emp: EmployeeDetails }>();
 
   constructor() { }
 
@@ -20,7 +20,7 @@ export class EmployeeDetailsComponent implements OnInit {
   }
 
   onDragEnded(event: CdkDragEnd, emp: EmployeeDetails) {
-    this.onDragEnd.emit({event, emp});
-   }
+    this.onDragEnd.emit({ event, emp });
+  }
 
 }

@@ -1,9 +1,7 @@
 <div class="m-2 grid grid-cols-2">
     <div class="m-2 flex justify-center items-center" *ngFor="let customLabel of labelList">
-        <!-- {{_calendar.activeDate}}
-        {{selectedDate}}
-        {{customLabel.value()}} -->
-        <button [ngClass]="{'!bg-[#3f51b5] !text-white': comparWithActiveDate(customLabel.value())}" mat-button (click)="customLabelClicked(customLabel.value)"> {{customLabel.label}} </button>
+        <button [ngClass]="{'!bg-[#3f51b5] !text-white': comparWithActiveDate(customLabel.value())}" mat-button
+            (click)="customLabelClicked(customLabel.value)"> {{customLabel.label}} </button>
     </div>
 </div>
 
@@ -26,7 +24,7 @@
         </div>
         <div>
             <button mat-button matDateRangePickerCancel>Cancel</button>
-            <button mat-raised-button color="primary" matDateRangePickerApply (click)="myFun($event)">
+            <button mat-raised-button color="primary" matDateRangePickerApply (click)="onDateSave()">
                 Save
             </button>
         </div>

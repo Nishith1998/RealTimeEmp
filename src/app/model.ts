@@ -5,3 +5,8 @@ export type EmployeeDetails = {
     fromDate: string;
     toDate: string;
 }
+
+export type DateHeader = {
+    label: string;
+    value: () => Date | null
+}

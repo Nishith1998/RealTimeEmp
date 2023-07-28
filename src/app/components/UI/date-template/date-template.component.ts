@@ -3,6 +3,7 @@ import { DateAdapter, MAT_DATE_FORMATS, MatDateFormats } from '@angular/material
 import { MatCalendar, MatDatepicker } from '@angular/material/datepicker';
 import { Subject, takeUntil } from 'rxjs';
 import { FROM_DATE_HEADER, TO_DATE_HEADER } from 'src/app/constants';
+import { DateHeader } from 'src/app/model';
 import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
@@ -12,47 +13,38 @@ import { EmployeeService } from 'src/app/services/employee.service';
 })
 export class DateTemplateComponent<D> {
   private _destroyed = new Subject<void>();
-  selectedDate: string = 'No Date';
-  // @ViewChild(MatDatepicker) datepicker!: MatDatepicker<Date>;
-  labelList: any;
-  // [
-  //   {label: 'Today', value: 1}, 
-  //   {label: 'Next Monday', value: 2},
-  //   {label: 'Next Tuesday', value:3 }, 
-  //   {label: 'After 1 week', value:7 },
-  //   {label: 'No Date', value: 0 },
-  //   ]
+  selectedDate!: string;
+  labelList!: DateHeader[];
 
   constructor(
-    public _empService: EmployeeService,
-    public _calendar: MatCalendar<D>,
+    private _empService: EmployeeService,
+    private _calendar: MatCalendar<D>,
     private _dateAdapter: DateAdapter<D>,
-    @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
-    cdr: ChangeDetectorRef) {
+    @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats) {
     _calendar.stateChanges
       .pipe(takeUntil(this._destroyed))
-      .subscribe(() => { cdr.markForCheck();    this.selectedDate = this._dateAdapter
-        .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel) });
-
-    _calendar._userSelection.subscribe(date => console.log("Date change", date))
+      .subscribe(() => {
+        this.selectedDate = this._dateAdapter
+          .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
+      });
   }
 
   comparWithActiveDate(date1: Date | null): boolean {
-    if(date1 && this.selectedDate) {
-    console.log("date: ",new Date(this.selectedDate).toDateString(), date1.toDateString() )
-    return new Date(this.selectedDate).toDateString() === date1.toDateString();
+    if (date1 && this.selectedDate) {
+      return new Date(this.selectedDate).toDateString() === date1.toDateString();
     } else {
       return this.selectedDate === 'No Date';
     }
   }
-  
+
   ngOnInit() {
-    // this.labelList = FROM_DATE_HEADER;
-    this.labelList = this._empService.datePicker() === 'fromDate' ? FROM_DATE_HEADER : TO_DATE_HEADER;
-    // this._empService.datePicker.subscribe(pickerType => {
-    //   console.log("pickerType: ", pickerType)
-    //   this.labelList = pickerType === 'fromDate' ? FROM_DATE_HEADER : FROM_DATE_HEADER;
-    // })
+    if (this._empService.datePicker() === 'fromDate') {
+      this.selectedDate = new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', 'day': 'numeric' });
+      this.labelList = FROM_DATE_HEADER;
+    } else {
+      this.selectedDate = 'No Date';
+      this.labelList = TO_DATE_HEADER;
+    }
   }
 
   ngOnDestroy() {
@@ -61,55 +53,33 @@ export class DateTemplateComponent<D> {
   }
 
   get periodLabel() {
-    // console.log("activeDate: ", this._calendar.activeDate)
-
     return this._dateAdapter
       .format(this._calendar.activeDate, this._dateFormats.display.monthYearLabel)
       .toLocaleUpperCase();
   }
 
-  // get selectedDate() {
-  //   console.log("activeDate: ", this._calendar.activeDate);
-  //   return this._dateAdapter
-  //     .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
-  //   // .toLocaleUpperCase();
-  // }
-
-  // set selected(value: string) {
-  //   this._selectedValue = value;
-  // }
-
   previousClicked() {
     this._calendar.activeDate = this._dateAdapter.addCalendarMonths(this._calendar.activeDate, -1)
     this.selectedDate = this._dateAdapter
-    .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
+      .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
   }
 
   nextClicked() {
     this._calendar.activeDate = this._dateAdapter.addCalendarMonths(this._calendar.activeDate, 1)
     this.selectedDate = this._dateAdapter
-    .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
+      .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
   }
 
-  customLabelClicked(dateValue: () => D) {
-    this._calendar.selected = dateValue() ?? null;
-    this._calendar.activeDate = dateValue() ?? <D>new Date();
-    if(dateValue() === null)
-    this.selectedDate = 'No Date'
-    // if (noOfDays === 0) {
-    //   this.selectedDate = 'No date';
-    //   this._calendar.selected = null;
-    // } else {
-    //   this._calendar.activeDate = this._dateAdapter.addCalendarDays(this._calendar.activeDate, noOfDays);
-    //   this._calendar.selected = this._calendar.activeDate;
-    //   this.selectedDate = this._dateAdapter
-    //   .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel) 
-    // }
+  customLabelClicked(dateValue: () => Date | null) {
+    this._calendar.selected = <D>dateValue() ?? null;
+    this._calendar.activeDate = <D>dateValue() ?? <D>new Date();
+    if (dateValue() === null) {
+      this.selectedDate = 'No Date';
+    }
 
   }
 
-  myFun(value: any) {
-    console.log("value: ", value);
+  onDateSave() {
     this._empService.customDate.next(String(this.selectedDate));
   }
 }
