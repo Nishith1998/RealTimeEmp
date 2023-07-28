@@ -1,9 +1,8 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatCalendarCellClassFunction, MatDatepicker } from '@angular/material/datepicker';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DateTemplateComponent } from 'src/app/components/UI/date-template/date-template.component';
-import { ApiService } from 'src/app/services/api.service';
+import { FROM_DATE_HEADER, ROLE_LIST, TO_DATE_HEADER } from 'src/app/constants';
 import { EmployeeService } from 'src/app/services/employee.service';
 import { IndexedDbService } from 'src/app/services/indexed-db.service';
 
@@ -18,13 +17,12 @@ export class EmployeeFormComponent implements OnInit {
   employeeForm!: FormGroup;
 
   dateTemplate = DateTemplateComponent;
-  fromDateFrom!: number;
+  // fromDateFrom!: number;
   isEditEnabled: boolean = false;
   employeeId!: string | null;
-  @ViewChild(MatDatepicker) datepicker!: MatDatepicker<Date>;
+  roleList: string[] = ROLE_LIST;
 
-
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private empService: EmployeeService, private apiService: ApiService, private router: Router, private idxDbSer: IndexedDbService) { }
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private empService: EmployeeService, private router: Router, private idxDbSer: IndexedDbService) { }
 
   ngOnInit() {
     console.log("pathParam: ", this.route.snapshot.paramMap.get('id'));
@@ -37,33 +35,25 @@ export class EmployeeFormComponent implements OnInit {
     } else {
       this.initializeForm({ name: '', role: '', fromDate: '', toDate: '' });
     }
-    // this.empService.customDate.subscribe(dateValue => {
+    this.empService.customDate.subscribe(dateValue => {
+
+      // this.fromDateFrom = new Date(dateValue).getDate();
+      this.empService.datePicker() === 'fromDate' ?
+      this.employeeForm.controls['fromDate'].patchValue(new Date(dateValue)) :
+      this.employeeForm.controls['toDate'].patchValue(new Date(dateValue))
+    });
+    // this.empService.toDate.subscribe(dateValue => {
     //   this.fromDateFrom = new Date(dateValue).getDate();
-    //   this.employeeForm.controls['fromDate'].patchValue(new Date(dateValue))
+    //   this.employeeForm.controls['toDate'].patchValue(new Date(dateValue))
     // })
   }
   initializeForm(empData: { name: string, role: string, fromDate: string, toDate: string }) {
     this.employeeForm = this.fb.group({
       name: [empData.name, Validators.required],
-      role: [empData.role],
-      fromDate: [empData.fromDate],
+      role: [empData.role, Validators.required],
+      fromDate: [empData.fromDate, Validators.required],
       toDate: [empData.toDate]
     });
-  }
-
-  public dateClass: MatCalendarCellClassFunction<Date> = (cellDate, view) => {
-    // Only highligh dates inside the month view.
-    if (view === 'month') {
-      const date = cellDate.getDate();
-
-      // Highlight the 1st and 20th day of each month.
-      return date === this.fromDateFrom ? 'example-custom-date-class' : '';
-    }
-    return '';
-  };
-
-  onDateChange(value: any) {
-    console.log("date change value: ", value);
   }
 
   onSubmit() {
@@ -81,7 +71,18 @@ export class EmployeeFormComponent implements OnInit {
         error: error => console.log("Error adding employee: ", error)
       });
     }
+  }
 
-    // save the record
+  datePickerOpened(type: 'fromDate' | 'toDate') {
+    // this.empService.datePicker.next(type);
+    // type === 'fromDate' ?
+    this.empService.datePicker.set(type) //:
+    // this.empService.datePicker.set(TO_DATE_HEADER)
+    console.log("opened")
+  }
+
+  getDateFromDate(value: any) {
+    // console.log("value: ", value)
+    return new Date(value);
   }
 }

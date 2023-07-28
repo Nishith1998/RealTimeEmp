@@ -1,0 +1,24 @@
+<div class="text-xl text-[#3f51b5]">{{employeeTitle}}</div>
+<div class="h-24" *ngFor="let emp of employeeList">
+  <div class="absolute z-0 bg-red-500 right-0 w-1/2 h-20 flex justify-end items-center">
+    <mat-icon class="m-2 text-white">delete</mat-icon>
+  </div>
+  <div class="absolute z-0 bg-green-500 left-0 w-1/2 h-20 flex items-center">
+    <mat-icon class="m-2 text-white">edit</mat-icon>
+  </div>
+  <div class="relative z-10 bg-white" appRestorePositionOnDrag cdkDragLockAxis="x" cdkDrag
+    (cdkDragEnded)="onDragEnded($event, emp)">
+    <div class="pb-2">
+      <div class="text-lg font-medium py-2">
+        {{emp.name}}
+      </div>
+      <div class="text-sm">
+        {{emp.role}}
+      </div>
+      <div class="text-sm">
+        {{emp.fromDate | date}}{{emp.toDate ? '-' + (emp.toDate | date) : ''}}
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+  </div>
+</div>

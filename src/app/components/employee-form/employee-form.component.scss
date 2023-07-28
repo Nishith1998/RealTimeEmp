@@ -16,3 +16,7 @@
   // body {
   //   @apply flex flex-col
   // }
+  /* Example CSS */
+::ng-deep.mat-datepicker-toggle-default-icon {
+  color: #3f51b5 !important;
+}

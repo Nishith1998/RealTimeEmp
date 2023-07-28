@@ -1,3 +1,9 @@
+export const ROLE_LIST = [
+    "Product Designer",
+    "Flutter Developer",
+    "QA Tester",
+    "Product Owner",
+]
 export const FROM_DATE_HEADER = [
     {
         label: 'Today',
@@ -23,8 +29,14 @@ export const FROM_DATE_HEADER = [
             date.setDate(date.getDate() + 7);
             return new Date(date);
         }
-    },
+    }
+]
+
+export const TO_DATE_HEADER = [
     {
         label: 'No date', value: () => null
     },
+    {
+        label: 'Today', value: () => new Date()
+    }
 ]

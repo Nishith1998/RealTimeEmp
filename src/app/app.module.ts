@@ -12,6 +12,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DateTemplateComponent } from './components/UI/date-template/date-template.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { RestorePositionOnDragDirective } from './directives/restore-position-on-drag.directive';
+import { CommonModule } from '@angular/common';
+import { SortAndFilterPipe } from 'src/app/pipes/sort-and-filter.pipe';
+import { EmployeeDetailsComponent } from 'src/app/components/employee-details/employee-details.component';
 
 @NgModule({
   declarations: [
@@ -20,9 +23,12 @@ import { RestorePositionOnDragDirective } from './directives/restore-position-on
     ToolbarComponent,
     EmployeeFormComponent,
     DateTemplateComponent,
-    RestorePositionOnDragDirective
+    EmployeeDetailsComponent,
+    RestorePositionOnDragDirective,
+    SortAndFilterPipe
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

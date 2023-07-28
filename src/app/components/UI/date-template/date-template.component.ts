@@ -1,8 +1,8 @@
-import { ChangeDetectorRef, Component, Inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, Input, ViewChild, Pipe } from '@angular/core';
 import { DateAdapter, MAT_DATE_FORMATS, MatDateFormats } from '@angular/material/core';
 import { MatCalendar, MatDatepicker } from '@angular/material/datepicker';
 import { Subject, takeUntil } from 'rxjs';
-import { FROM_DATE_HEADER } from 'src/app/constants';
+import { FROM_DATE_HEADER, TO_DATE_HEADER } from 'src/app/constants';
 import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
@@ -12,9 +12,9 @@ import { EmployeeService } from 'src/app/services/employee.service';
 })
 export class DateTemplateComponent<D> {
   private _destroyed = new Subject<void>();
-  selectedDate!: string;
-  @ViewChild(MatDatepicker) datepicker!: MatDatepicker<Date>;
-  labelList: any = FROM_DATE_HEADER;
+  selectedDate: string = 'No Date';
+  // @ViewChild(MatDatepicker) datepicker!: MatDatepicker<Date>;
+  labelList: any;
   // [
   //   {label: 'Today', value: 1}, 
   //   {label: 'Next Monday', value: 2},
@@ -24,8 +24,8 @@ export class DateTemplateComponent<D> {
   //   ]
 
   constructor(
-    private _empService: EmployeeService,
-    private _calendar: MatCalendar<D>,
+    public _empService: EmployeeService,
+    public _calendar: MatCalendar<D>,
     private _dateAdapter: DateAdapter<D>,
     @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
     cdr: ChangeDetectorRef) {
@@ -37,13 +37,31 @@ export class DateTemplateComponent<D> {
     _calendar._userSelection.subscribe(date => console.log("Date change", date))
   }
 
+  comparWithActiveDate(date1: Date | null): boolean {
+    if(date1 && this.selectedDate) {
+    console.log("date: ",new Date(this.selectedDate).toDateString(), date1.toDateString() )
+    return new Date(this.selectedDate).toDateString() === date1.toDateString();
+    } else {
+      return this.selectedDate === 'No Date';
+    }
+  }
+  
+  ngOnInit() {
+    // this.labelList = FROM_DATE_HEADER;
+    this.labelList = this._empService.datePicker() === 'fromDate' ? FROM_DATE_HEADER : TO_DATE_HEADER;
+    // this._empService.datePicker.subscribe(pickerType => {
+    //   console.log("pickerType: ", pickerType)
+    //   this.labelList = pickerType === 'fromDate' ? FROM_DATE_HEADER : FROM_DATE_HEADER;
+    // })
+  }
+
   ngOnDestroy() {
     this._destroyed.next();
     this._destroyed.complete();
   }
 
   get periodLabel() {
-    console.log("activeDate: ", this._calendar.activeDate)
+    // console.log("activeDate: ", this._calendar.activeDate)
 
     return this._dateAdapter
       .format(this._calendar.activeDate, this._dateFormats.display.monthYearLabel)
@@ -92,6 +110,6 @@ export class DateTemplateComponent<D> {
 
   myFun(value: any) {
     console.log("value: ", value);
-    this._empService.customDate.next(String(this._calendar.activeDate));
+    this._empService.customDate.next(String(this.selectedDate));
   }
 }

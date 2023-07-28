@@ -1,64 +1,42 @@
 <div class="flex flex-col h-full">
-    <app-toolbar toolbarTitle="Add Employee"></app-toolbar>
+    <app-toolbar toolbarTitle="Add Employee Details"></app-toolbar>
 
     <form class="flex flex-col h-full justify-between p-4" *ngIf="employeeForm" [formGroup]="employeeForm"
         (ngSubmit)="onSubmit()">
-        <!-- <div class="flex flex-col"> -->
         <div class="flex flex-col">
             <mat-form-field class="w-full">
-                <span matPrefix><mat-icon color="primary">person_outline</mat-icon></span>
+                <span matPrefix><mat-icon class="m-3" color="primary">person_outline</mat-icon></span>
                 <input matInput id="name" type="text" formControlName="name" placeholder="Employee name" required>
             </mat-form-field>
             <mat-form-field class="w-full">
-                <span matPrefix><mat-icon color="primary">work_outline</mat-icon></span>
+                <span matPrefix><mat-icon class="m-3" color="primary">work_outline</mat-icon></span>
                 <mat-select formControlName="role" placeholder="Select role">
-                    <mat-option *ngFor="let role of ['toppingList']" [value]="role">{{role}}</mat-option>
+                    <mat-option *ngFor="let role of roleList" [value]="role">{{role}}</mat-option>
                 </mat-select>
             </mat-form-field>
 
             <div class="flex flex-row justify-between items-center gap-2">
                 <mat-form-field class="w-full">
-                    <input matInput formControlName="fromDate" [matDatepicker]="picker1" placeholder="Today">
+                    <input #fromDate matInput formControlName="fromDate" [matDatepicker]="picker1" placeholder="Today">
                     <mat-datepicker-toggle matPrefix [for]="picker1"></mat-datepicker-toggle>
-                    <mat-datepicker [dateClass]="dateClass" #picker1 [calendarHeaderComponent]="dateTemplate">
+                    <mat-datepicker #picker1 (opened)="datePickerOpened('fromDate')" [calendarHeaderComponent]="dateTemplate">
                     </mat-datepicker>
                 </mat-form-field>
 
-                <div><mat-icon>arrow_right_alt</mat-icon></div>
+                <div><mat-icon color="primary">arrow_right_alt</mat-icon></div>
 
                 <mat-form-field class="w-full">
-                    <input matInput formControlName="toDate" [matDatepicker]="picker2" placeholder="No date">
+                    <input matInput formControlName="toDate" [min]="getDateFromDate(fromDate.value)" [matDatepicker]="picker2" placeholder="No date">
                     <mat-datepicker-toggle matPrefix [for]="picker2"></mat-datepicker-toggle>
-                    <mat-datepicker #picker2 [calendarHeaderComponent]="dateTemplate">
+                    <mat-datepicker #picker2 (opened)="datePickerOpened('toDate')" [calendarHeaderComponent]="dateTemplate">
                     </mat-datepicker>
                 </mat-form-field>
             </div>
         </div>
-        <!-- <div class='fixed bottom-0 w-full'>
-            <button class='my-8 float-right px-5 py-2 bg-red-500 text-white text-sm font-bold tracking-wide rounded-full focus:outline-none'>Back</button>
-            <button class='my-8 ml-auto px-5 py-2 bg-red-500 text-white text-sm font-bold tracking-wide rounded-full focus:outline-none'>Next(Quiz)</button>
-            <button class='bottom-0 my-8 float-right px-5 py-2 bg-red-500 text-white text-sm font-bold tracking-wide rounded-full focus:outline-none'>Next</button>
-        </div> -->
 
         <div class="flex self-end">
             <button mat-raised-button color="primary" type="submit" [disabled]="!employeeForm.valid">Submit</button>
         </div>
-        <!-- </div> -->
 
     </form>
 </div>
-
-<!-- <hr> -->
-
-<!-- <p>Form Value: {{ employeeForm.value | json }}</p> -->
-
-<!-- <p>Form Status: {{ employeeForm.status }}</p> -->
-
-<!-- <button type="button" (click)="updateProfile()">Update Profile</button> -->
-
-
-<!-- 
-  Copyright Google LLC. All Rights Reserved.
-  Use of this source code is governed by an MIT-style license that
-  can be found in the LICENSE file at https://angular.io/license
-  -->
