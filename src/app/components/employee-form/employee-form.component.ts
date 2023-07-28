@@ -15,9 +15,7 @@ import { IndexedDbService } from 'src/app/services/indexed-db.service';
   styleUrls: ['./employee-form.component.scss']
 })
 export class EmployeeFormComponent implements OnInit {
-  formValue: { name: string, role: string, fromDate: string, toDate: string } = { name: '', role: '', fromDate: '', toDate: '' };
   employeeForm!: FormGroup;
-
   dateTemplate = DateTemplateComponent;
   isEditEnabled: boolean = false;
   employeeId!: string | null;
@@ -25,27 +23,35 @@ export class EmployeeFormComponent implements OnInit {
   private _destroyed = new Subject<void>();
 
 
-  constructor(private _snackBar: MatSnackBar, private route: ActivatedRoute, private fb: FormBuilder, private empService: EmployeeService, private router: Router, private indexedDBService: IndexedDbService) { }
+  constructor(
+    private _snackBar: MatSnackBar,
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private _fb: FormBuilder,
+    private _empService: EmployeeService,
+    private _indexedDBService: IndexedDbService
+  ) { }
 
   ngOnInit() {
-    this.employeeId = this.route.snapshot.paramMap.get('id');
+    this.employeeId = this._route.snapshot.paramMap.get('id');
     if (this.employeeId !== null) {
       this.isEditEnabled = true;
-      this.indexedDBService.getByKey(+this.employeeId).pipe(first()).subscribe(empData => {
+      this._indexedDBService.getByKey(+this.employeeId).pipe(first()).subscribe(empData => {
         this.initializeForm(empData)
       });
     } else {
       this.initializeForm({ name: '', role: '', fromDate: '', toDate: '' });
     }
-    this.empService.customDate.pipe(takeUntil(this._destroyed)).subscribe(dateValue => {
+    this._empService.customDate.pipe(takeUntil(this._destroyed)).subscribe(dateValue => {
 
-      this.empService.datePicker() === 'fromDate' ?
+      this._empService.datePicker() === 'fromDate' ?
         this.employeeForm.controls['fromDate'].patchValue(new Date(dateValue)) :
         this.employeeForm.controls['toDate'].patchValue(new Date(dateValue))
     });
   }
+
   initializeForm(empData: { name: string, role: string, fromDate: string, toDate: string }) {
-    this.employeeForm = this.fb.group({
+    this.employeeForm = this._fb.group({
       name: [empData.name, Validators.required],
       role: [empData.role, Validators.required],
       fromDate: [empData.fromDate, Validators.required],
@@ -55,10 +61,10 @@ export class EmployeeFormComponent implements OnInit {
 
   onSubmit() {
     if (this.isEditEnabled && this.employeeId !== null) {
-      this.indexedDBService.put(+this.employeeId, this.employeeForm.value).pipe(first()).subscribe({
+      this._indexedDBService.put(+this.employeeId, this.employeeForm.value).pipe(first()).subscribe({
         next: val => {
           this._snackBar.open(SNACK_BAR_MSGS.onEditSuccess, "", { duration: SNACK_BAR_DURATION });
-          this.router.navigate(['']);
+          this._router.navigate(['']);
         },
         error: error => {
           this._snackBar.open(SNACK_BAR_MSGS.onEditFail, "", { duration: SNACK_BAR_DURATION });
@@ -66,9 +72,9 @@ export class EmployeeFormComponent implements OnInit {
       });
     }
     else {
-      this.indexedDBService.put(Date.now(), this.employeeForm.value).pipe(first()).subscribe({
+      this._indexedDBService.put(Date.now(), this.employeeForm.value).pipe(first()).subscribe({
         next: val => {
-          this.router.navigate(['']);
+          this._router.navigate(['']);
           this._snackBar.open(SNACK_BAR_MSGS.onAddSuccess, "", { duration: SNACK_BAR_DURATION });
         },
         error: error => {
@@ -79,11 +85,11 @@ export class EmployeeFormComponent implements OnInit {
   }
 
   onCancel() {
-    this.router.navigate(['']);
+    this._router.navigate(['']);
   }
 
   datePickerOpened(type: 'fromDate' | 'toDate') {
-    this.empService.datePicker.set(type);
+    this._empService.datePicker.set(type);
   }
 
   getDateFromDate(value: any) {
@@ -92,9 +98,9 @@ export class EmployeeFormComponent implements OnInit {
 
   deleteEmp() {
     if (this.employeeId) {
-      this.indexedDBService.delete(+this.employeeId).pipe(first()).subscribe(data => {
+      this._indexedDBService.delete(+this.employeeId).pipe(first()).subscribe(data => {
         this._snackBar.open(SNACK_BAR_MSGS.onDeleteSuccess, "", { duration: SNACK_BAR_DURATION });
-        this.router.navigate(['/']);
+        this._router.navigate(['']);
       },
         err => {
           this._snackBar.open(SNACK_BAR_MSGS.onDeleteFail, "", { duration: SNACK_BAR_DURATION });

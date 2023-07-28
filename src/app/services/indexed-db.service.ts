@@ -5,14 +5,6 @@ import { EmployeeDetails } from 'src/app/model';
 
 const VERSION = 1;
 const STORAGE_NAME = 'employeeStore';
-
-interface Record {
-  key?: number;
-  name: string;
-  role: string;
-  fromDate: string;
-  toDate: string;
-}
 @Injectable({
   providedIn: 'root',
 })
@@ -48,7 +40,7 @@ export class IndexedDbService {
   }
 
   get(): Observable<EmployeeDetails[]> {
-    return Observable.create((observer: Observer<Record | 500>) => {
+    return Observable.create((observer: Observer<EmployeeDetails | 500>) => {
       const onError = (error: any) => {
         console.log(error);
         observer.complete();
@@ -57,7 +49,7 @@ export class IndexedDbService {
         try {
           const txn = db.transaction([STORAGE_NAME], 'readonly');
           const store = txn.objectStore(STORAGE_NAME);
-          const getRequest: IDBRequest<Record> = store.getAll();
+          const getRequest: IDBRequest<EmployeeDetails> = store.getAll();
           getRequest.onerror = () => onError(getRequest.error);
           getRequest.onsuccess = () => {
             const record = getRequest.result;
@@ -78,8 +70,8 @@ export class IndexedDbService {
     });
   }
 
-  getByKey(keyName: number): Observable<Record> {
-    return Observable.create((observer: Observer<Record | 500>) => {
+  getByKey(keyName: number): Observable<EmployeeDetails> {
+    return Observable.create((observer: Observer<EmployeeDetails | 500>) => {
       const onError = (error: any) => {
         console.log(error);
         observer.complete();
@@ -88,7 +80,7 @@ export class IndexedDbService {
         try {
           const txn = db.transaction([STORAGE_NAME], 'readonly');
           const store = txn.objectStore(STORAGE_NAME);
-          const getRequest: IDBRequest<Record> = store.get(keyName);
+          const getRequest: IDBRequest<EmployeeDetails> = store.get(keyName);
           getRequest.onerror = () => onError(getRequest.error);
           getRequest.onsuccess = () => {
             const record = getRequest.result;
@@ -98,8 +90,6 @@ export class IndexedDbService {
               observer.error(500);
             } else {
               observer.next(getRequest.result);
-
-              // observer.next(getRequest.result);
             }
             observer.complete();
           };
@@ -120,7 +110,7 @@ export class IndexedDbService {
         try {
           const txn = db.transaction([STORAGE_NAME], 'readwrite');
           const store = txn.objectStore(STORAGE_NAME);
-          const record: Record = { ...value, key: key };
+          const record: EmployeeDetails = { ...value, key: key };
           const putRequest = store.put(record);
           putRequest.onerror = () => onError(putRequest.error);
           putRequest.onsuccess = () => {
