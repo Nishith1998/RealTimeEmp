@@ -11,6 +11,7 @@ import { EmployeeFormComponent } from './components/employee-form/employee-form.
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DateTemplateComponent } from './components/UI/date-template/date-template.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { RestorePositionOnDragDirective } from './directives/restore-position-on-drag.directive';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     EmployeeListComponent,
     ToolbarComponent,
     EmployeeFormComponent,
-    DateTemplateComponent
+    DateTemplateComponent,
+    RestorePositionOnDragDirective
   ],
   imports: [
     BrowserModule,

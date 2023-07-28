@@ -1,17 +1,27 @@
 <div class="flex flex-col h-full">
     <app-toolbar toolbarTitle="Employee List"></app-toolbar>
     <div class="flex flex-col h-full justify-between p-4">
-        <div *ngIf="empList().length === 0">No records found</div>
-        <div cdkDragLockAxis="x" cdkDrag *ngFor="let emp of empList()" (cdkDragEnded)="onDragEnded($event, emp)">
-            <div (dblclick)="editEmployee(emp)">
-                <div class="text-lg">
-                    {{emp.name}}
+        <div class="relative flex flex-col">
+            <div *ngIf="empList().length === 0">No records found</div>
+            <div *ngFor="let emp of empList()">
+                <div class="absolute z-0 bg-red-500 right-0 w-1/2 h-full"><mat-icon
+                        class="float-right">delete</mat-icon></div>
+                <div class="absolute z-0 bg-green-500 left-0 w-1/2 h-full"><mat-icon class="float-left">edit</mat-icon>
                 </div>
-                <div class="text-sm">
-                    {{emp.role}}
-                </div>
-                <div class="text-sm">
-                    {{emp.fromDate | date}}{{emp.toDate ? '-' + (emp.toDate | date) : ''}}
+                <div class="relative z-10 bg-white" appRestorePositionOnDrag cdkDragLockAxis="x" cdkDrag
+                    (cdkDragEnded)="onDragEnded($event, emp)">
+                    <div (dblclick)="editEmployee(emp)">
+                        <div class="text-lg">
+                            {{emp.name}}
+                        </div>
+                        <div class="text-sm">
+                            {{emp.role}}
+                        </div>
+                        <div class="text-sm">
+                            {{emp.fromDate | date}}{{emp.toDate ? '-' + (emp.toDate | date) : ''}}
+                        </div>
+                    </div>
+                    <mat-divider></mat-divider>
                 </div>
             </div>
         </div>

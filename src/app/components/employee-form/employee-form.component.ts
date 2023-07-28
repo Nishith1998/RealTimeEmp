@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatCalendarCellClassFunction } from '@angular/material/datepicker';
+import { MatCalendarCellClassFunction, MatDatepicker } from '@angular/material/datepicker';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DateTemplateComponent } from 'src/app/components/UI/date-template/date-template.component';
 import { ApiService } from 'src/app/services/api.service';
@@ -21,6 +21,8 @@ export class EmployeeFormComponent implements OnInit {
   fromDateFrom!: number;
   isEditEnabled: boolean = false;
   employeeId!: string | null;
+  @ViewChild(MatDatepicker) datepicker!: MatDatepicker<Date>;
+
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private empService: EmployeeService, private apiService: ApiService, private router: Router, private idxDbSer: IndexedDbService) { }
 
@@ -35,12 +37,11 @@ export class EmployeeFormComponent implements OnInit {
     } else {
       this.initializeForm({ name: '', role: '', fromDate: '', toDate: '' });
     }
-    this.empService.customDate.subscribe(dateValue => {
-      this.fromDateFrom = new Date(dateValue).getDate();
-      this.employeeForm.controls['fromDate'].patchValue(new Date(dateValue))
-    })
+    // this.empService.customDate.subscribe(dateValue => {
+    //   this.fromDateFrom = new Date(dateValue).getDate();
+    //   this.employeeForm.controls['fromDate'].patchValue(new Date(dateValue))
+    // })
   }
-
   initializeForm(empData: { name: string, role: string, fromDate: string, toDate: string }) {
     this.employeeForm = this.fb.group({
       name: [empData.name, Validators.required],

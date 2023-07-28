@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component, Inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, ViewChild } from '@angular/core';
 import { DateAdapter, MAT_DATE_FORMATS, MatDateFormats } from '@angular/material/core';
-import { MatCalendar } from '@angular/material/datepicker';
+import { MatCalendar, MatDatepicker } from '@angular/material/datepicker';
 import { Subject, takeUntil } from 'rxjs';
+import { FROM_DATE_HEADER } from 'src/app/constants';
 import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
@@ -11,6 +12,16 @@ import { EmployeeService } from 'src/app/services/employee.service';
 })
 export class DateTemplateComponent<D> {
   private _destroyed = new Subject<void>();
+  selectedDate!: string;
+  @ViewChild(MatDatepicker) datepicker!: MatDatepicker<Date>;
+  labelList: any = FROM_DATE_HEADER;
+  // [
+  //   {label: 'Today', value: 1}, 
+  //   {label: 'Next Monday', value: 2},
+  //   {label: 'Next Tuesday', value:3 }, 
+  //   {label: 'After 1 week', value:7 },
+  //   {label: 'No Date', value: 0 },
+  //   ]
 
   constructor(
     private _empService: EmployeeService,
@@ -18,9 +29,10 @@ export class DateTemplateComponent<D> {
     private _dateAdapter: DateAdapter<D>,
     @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
     cdr: ChangeDetectorRef) {
-    // _calendar.stateChanges
-    //   .pipe(takeUntil(this._destroyed))
-    //   .subscribe(() => cdr.markForCheck());
+    _calendar.stateChanges
+      .pipe(takeUntil(this._destroyed))
+      .subscribe(() => { cdr.markForCheck();    this.selectedDate = this._dateAdapter
+        .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel) });
 
     _calendar._userSelection.subscribe(date => console.log("Date change", date))
   }
@@ -38,27 +50,44 @@ export class DateTemplateComponent<D> {
       .toLocaleUpperCase();
   }
 
-  get selectedDate() {
-    console.log("activeDate: ", this._calendar.activeDate)
-    return this._dateAdapter
-      .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
-      // .toLocaleUpperCase();
+  // get selectedDate() {
+  //   console.log("activeDate: ", this._calendar.activeDate);
+  //   return this._dateAdapter
+  //     .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
+  //   // .toLocaleUpperCase();
+  // }
+
+  // set selected(value: string) {
+  //   this._selectedValue = value;
+  // }
+
+  previousClicked() {
+    this._calendar.activeDate = this._dateAdapter.addCalendarMonths(this._calendar.activeDate, -1)
+    this.selectedDate = this._dateAdapter
+    .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
   }
 
-  previousClicked(mode: 'month' | 'year') {
-    this._calendar.activeDate = mode === 'month' ?
-      this._dateAdapter.addCalendarMonths(this._calendar.activeDate, -1) :
-      this._dateAdapter.addCalendarYears(this._calendar.activeDate, -1);
+  nextClicked() {
+    this._calendar.activeDate = this._dateAdapter.addCalendarMonths(this._calendar.activeDate, 1)
+    this.selectedDate = this._dateAdapter
+    .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel)
   }
 
-  nextClicked(mode: 'month' | 'year') {
-    this._calendar.activeDate = mode === 'month' ?
-      this._dateAdapter.addCalendarMonths(this._calendar.activeDate, 1) :
-      this._dateAdapter.addCalendarYears(this._calendar.activeDate, 1);
-  }
+  customLabelClicked(dateValue: () => D) {
+    this._calendar.selected = dateValue() ?? null;
+    this._calendar.activeDate = dateValue() ?? <D>new Date();
+    if(dateValue() === null)
+    this.selectedDate = 'No Date'
+    // if (noOfDays === 0) {
+    //   this.selectedDate = 'No date';
+    //   this._calendar.selected = null;
+    // } else {
+    //   this._calendar.activeDate = this._dateAdapter.addCalendarDays(this._calendar.activeDate, noOfDays);
+    //   this._calendar.selected = this._calendar.activeDate;
+    //   this.selectedDate = this._dateAdapter
+    //   .format(this._calendar.activeDate, this._dateFormats.display.dateA11yLabel) 
+    // }
 
-  customLabelClicked(noOfDays: number) {
-    this._calendar.activeDate = this._dateAdapter.addCalendarDays(this._calendar.activeDate, noOfDays);
   }
 
   myFun(value: any) {
